@@ -18,6 +18,16 @@ interface EventFormData {
     maxAttendees: number;
 }
 
+interface ApiError {
+    response?: {
+        status?: number;
+        data?: {
+            message?: string;
+        };
+    };
+    message?: string;
+}
+
 const initialFormData: EventFormData = {
     title: '',
     description: '',
@@ -96,18 +106,19 @@ export function EventForm() {
             setTimeout(() => {
                 navigate('/events');
             }, 2000);
-        } catch (err: any) {
-            console.error('Error creating event:', err);
-            console.error('Error response:', err.response);
+        } catch (err) {
+            const error = err as ApiError;
+            console.error('Error creating event:', error);
+            console.error('Error response:', error.response);
             
-            if (err.response?.status === 401) {
+            if (error.response?.status === 401) {
                 const token = localStorage.getItem('token');
                 setError(`Authentication failed. ${token ? 'Your session might have expired.' : 'Please log in again.'}`);
-            } else if (err.response?.status === 403) {
+            } else if (error.response?.status === 403) {
                 setError('You do not have permission to create events. Only organizers can create events.');
-            } else if (err.response?.data?.message) {
-                setError(err.response.data.message);
-            } else if (err.message === 'Network Error') {
+            } else if (error.response?.data?.message) {
+                setError(error.response.data.message);
+            } else if (error.message === 'Network Error') {
                 setError('Cannot connect to the server. Please check your connection and try again.');
             } else {
                 setError('Failed to create event. Please try again.');

@@ -17,6 +17,15 @@ interface LoginResponse {
     errors: string[];
 }
 
+interface ApiError {
+    response?: {
+        status?: number;
+        data?: {
+            errors?: string[];
+        };
+    };
+}
+
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -67,14 +76,15 @@ export default function Login() {
 
             // Redirect to events page after successful login
             navigate('/events');
-        } catch (err: any) {
-            console.error('Login error:', err);
-            console.error('Error response:', err.response?.data);
+        } catch (err) {
+            const error = err as ApiError;
+            console.error('Login error:', error);
+            console.error('Error response:', error.response?.data);
             
-            if (err.response?.status === 401) {
+            if (error.response?.status === 401) {
                 setError('Invalid email or password');
-            } else if (err.response?.data?.errors) {
-                setError(err.response.data.errors.join(', '));
+            } else if (error.response?.data?.errors) {
+                setError(error.response.data.errors.join(', '));
             } else {
                 setError('An error occurred. Please try again.');
             }

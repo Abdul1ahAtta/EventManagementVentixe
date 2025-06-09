@@ -22,6 +22,11 @@ interface RegisterRequest {
     isOrganizer: boolean;
 }
 
+interface ApiErrorResponse {
+    errors?: Record<string, string[]>;
+    message?: string;
+}
+
 const initialFormData: RegisterRequest = {
     email: '',
     password: '',
@@ -49,9 +54,11 @@ export default function Register() {
             localStorage.setItem('token', token);
             localStorage.setItem('isOrganizer', String(isOrganizer));
             navigate('/events');
-        } catch (err: any) {
-            if (err.response?.data?.errors) {
-                setError(Object.values(err.response.data.errors).join(', '));
+        } catch (err) {
+            const errorResponse = err?.response?.data as ApiErrorResponse | undefined;
+            if (errorResponse?.errors) {
+                const errorMessages = Object.values(errorResponse.errors).flat();
+                setError(errorMessages.join(', '));
             } else {
                 setError('Registration failed. Please try again.');
                 console.error('Registration error:', err);
