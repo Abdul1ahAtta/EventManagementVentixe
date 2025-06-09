@@ -2,7 +2,7 @@
 export const API_CONFIG = {
     USER_SERVICE: 'https://userservice-wo2c.onrender.com',
     BOOKING_SERVICE: 'http://localhost:5049',
-    EVENT_SERVICE: 'http://localhost:5036',
+    EVENT_SERVICE: 'https://eventservice-dafq.onrender.com',
 };
 
 // API endpoints for different features
